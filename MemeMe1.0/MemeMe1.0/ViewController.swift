@@ -116,23 +116,22 @@ class ViewController: UIViewController,
     
     //MARK: Configure UI
     func configureUI(){
-        clearBottomTextField()
-        clearTopTextField()
-        memeImage.image = nil
-        topTextField.defaultTextAttributes = memeTextAttributes
-        bottomTextField.defaultTextAttributes = memeTextAttributes
-        self.topTextField.delegate = self
-        self.bottomTextField.delegate = self
-        topTextField.textAlignment = .center
-        bottomTextField.textAlignment = .center
         setupTextField(textField: topTextField, text: "TOP")
         setupTextField(textField: bottomTextField, text: "BOTTOM")
-        shareButtonOutet.isEnabled = isShareButtonEnabled
     }
     
     func setupTextField(textField: UITextField, text: String) {
+        clearBottomTextField()
+        clearTopTextField()
+        memeImage.image = nil
         textField.placeholder = text
+        textField.defaultTextAttributes = memeTextAttributes
+        textField.delegate = self
+        textField.textAlignment = .center
+        textField.autocapitalizationType = .allCharacters
+        shareButtonOutet.isEnabled = isShareButtonEnabled
     }
+    
     //MARK: Delegate methods
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
