@@ -11,16 +11,7 @@ class ViewController: UIViewController,
                       UIImagePickerControllerDelegate & UINavigationControllerDelegate,
                       UITextFieldDelegate {
     
-    struct Meme {
-        var topText: String?
-        var bottomText: String?
-        var originalImage: UIImage?
-        var memedImage: UIImage?
-    }
     
-    //MARK: Properties
-    
-    var memedImage: UIImage!
     
     //MARK: Outlets
     
@@ -32,8 +23,16 @@ class ViewController: UIViewController,
     @IBOutlet var bottomToolBar: UIToolbar!
     @IBOutlet var shareButtonOutet: UIBarButtonItem!
     
+    //MARK: Properties
     
-    //MARK: properties
+    struct Meme {
+        var topText: String?
+        var bottomText: String?
+        var originalImage: UIImage?
+        var memedImage: UIImage?
+    }
+    
+    var memedImage: UIImage!
     
     let memeTextAttributes: [NSAttributedString.Key: Any] = [
         NSAttributedString.Key.strokeColor: UIColor.black,
@@ -194,7 +193,7 @@ class ViewController: UIViewController,
     func unsubscribTokeyboardNotification() {
         NotificationCenter.default.removeObserver(self)
     }
-  
+    
 }
 
 extension ViewController {
@@ -204,9 +203,9 @@ extension ViewController {
         
         // Create the meme
         _ = Meme(topText: topTextField.text!,
-                        bottomText: bottomTextField.text!,
-                        originalImage: memeImage.image,
-                        memedImage: memedImage)
+                 bottomText: bottomTextField.text!,
+                 originalImage: memeImage.image,
+                 memedImage: memedImage)
     }
     
     func getKeyboardHeight(_ notification: Notification) -> CGFloat {
