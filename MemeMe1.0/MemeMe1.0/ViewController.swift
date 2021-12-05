@@ -32,23 +32,63 @@ class ViewController: UIViewController,
     @IBOutlet var bottomToolBar: UIToolbar!
     @IBOutlet var shareButtonOutet: UIBarButtonItem!
     
+    
+    //MARK: properties
+    
+    let memeTextAttributes: [NSAttributedString.Key: Any] = [
+        NSAttributedString.Key.strokeColor: UIColor.black,
+        NSAttributedString.Key.foregroundColor: UIColor.white,
+        NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
+        NSAttributedString.Key.strokeWidth: -5.0
+    ]
+    
+    var isCameraAvailable: Bool {
+        UIImagePickerController.isSourceTypeAvailable(.camera)
+    }
+    
+    var isShareButtonEnabled: Bool {
+        return !topTextField.text!.isEmpty &&
+            !bottomTextField.text!.isEmpty &&
+            memeImage.image != nil
+        
+    }
+    
+    //MARK: Lifecycle methods
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureUI()
+        subscribTokeyboardNotification()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        unsubscribTokeyboardNotification()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        cameraButtonOutlet.isEnabled = isCameraAvailable
+    }
+    
     //MARK: Actions
     
     @IBAction func cancelButton(_ sender: Any) {
         configureUI()
     }
     
-    @IBAction func imagePicker(_ sender: Any) {
+    func pickImage(source: UIImagePickerController.SourceType) {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
-        self.present(imagePicker, animated: true, completion: nil)
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
+    @IBAction func imagePicker(_ sender: Any) {
+        pickImage(source: .photoLibrary)
     }
     
     @IBAction func cameraButton(_ sender: Any) {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .camera
-        present(imagePicker, animated: true, completion: nil)
+        pickImage(source: .camera)
     }
     
     @IBAction func shareButton(_ sender: Any) {
@@ -75,27 +115,8 @@ class ViewController: UIViewController,
         }
     }
     
-    //MARK: Lifecycle methods
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureUI()
-        subscribTokeyboardNotification()
-        subscribTokeyboardNotificationHide()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        unsubscribTokeyboardNotification()
-        unsubscribTokeyboardNotificationHide()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        cameraButtonOutlet.isEnabled = isCameraAvailable
-    }
-    
     //MARK: Configure UI
     func configureUI(){
-        view.backgroundColor = .black
         clearBottomTextField()
         clearTopTextField()
         memeImage.image = nil
@@ -105,32 +126,15 @@ class ViewController: UIViewController,
         self.bottomTextField.delegate = self
         topTextField.textAlignment = .center
         bottomTextField.textAlignment = .center
-        topTextField.placeholder = "TOP"
-        bottomTextField.placeholder = "BOTTOM"
+        setupTextField(textField: topTextField, text: "TOP")
+        setupTextField(textField: bottomTextField, text: "BOTTOM")
         shareButtonOutet.isEnabled = isShareButtonEnabled
     }
     
-    
-    
-    let memeTextAttributes: [NSAttributedString.Key: Any] = [
-        NSAttributedString.Key.strokeColor: UIColor.white,
-        NSAttributedString.Key.foregroundColor: UIColor.white,
-        NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-        NSAttributedString.Key.strokeWidth: 5.0
-    ]
-    
-
-    
-    var isCameraAvailable: Bool {
-        UIImagePickerController.isSourceTypeAvailable(.camera)
+    func setupTextField(textField: UITextField, text: String) {
+        textField.placeholder = text
     }
-    
-    var isShareButtonEnabled: Bool {
-        return !topTextField.text!.isEmpty &&
-            !bottomTextField.text!.isEmpty &&
-            memeImage.image != nil
-        
-    }
+    //MARK: Delegate methods
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
@@ -179,27 +183,18 @@ class ViewController: UIViewController,
                                                name: UIResponder.keyboardWillShowNotification,
                                                object: nil)
         
-    }
-    
-    func unsubscribTokeyboardNotification() {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: UIResponder.keyboardWillShowNotification,
-                                                  object: nil)
-    }
-    
-    func unsubscribTokeyboardNotificationHide() {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: UIResponder.keyboardDidHideNotification,
-                                                  object: nil)
-    }
-    
-    func subscribTokeyboardNotificationHide() {
+        
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.keyboardWillHide(_:)),
                                                name: UIResponder.keyboardWillHideNotification,
                                                object: nil)
-        
     }
+    
+    
+    func unsubscribTokeyboardNotification() {
+        NotificationCenter.default.removeObserver(self)
+    }
+  
 }
 
 extension ViewController {
